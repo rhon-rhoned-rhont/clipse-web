@@ -597,6 +597,26 @@
         .feature-card:nth-child(3), .flowchart-step:nth-child(5) {
             animation-delay: 0.4s;
         }
+        /* Remove scrollbars while maintaining scroll functionality */
+html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Chrome, Safari and Opera */
+html::-webkit-scrollbar {
+    display: none;
+}
+
+/* In case you need to remove scrollbars from specific elements too */
+.scrollable-element {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.scrollable-element::-webkit-scrollbar {
+    display: none;
+}
     </style>
 </head>
 <body>
@@ -704,7 +724,7 @@
                 <ul>
                     <li><a href="#">Home</a></li>
                     <li><a href="#features">Features</a></li>
-                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#demo">Guide</a></li>
                     <li><a href="#download">Download</a></li>
                 </ul>
             </div>
