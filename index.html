@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Clipse - An intelligent semantic image search tool powered by CLIP neural network">
+    <title>Clipse - Semantic Image Search</title>
+    <link rel="icon" href="web.png" type="image/png">
+    <style>
+        :root {
+            --background: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --primary: #3a86ff;
+            --accent: #6c63ff;
+            --text: #e6e6e6;
+            --text-secondary: #a0a0a0;
+            --border: #2c2c2c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'SF Pro Display', 'Roboto', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1e1e2e 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* Header & Navigation */
+        header {
+            padding: 1.5rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+        
+        .download-btn {
+            background-color: var(--accent);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+        }
+        
+        /* Main Sections */
+        section {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .hero {
+            margin-top: 4rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 90vh;
+            padding-top: 2rem;
+        }
+        
+        .hero-video {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+        
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+        }
+        
+        .app-preview {
+            width: 100%;
+            max-width: 650px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+        
+        .app-preview:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--text) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .section-description {
+            max-width: 640px;
+            margin: 0 auto 2rem;
+            text-align: center;
+        }
+        
+        .highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        /* Features Section */
+        .features {
+            padding-top: 3rem;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            border-color: var(--accent);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .feature-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            text-align: center;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 0;
+            text-align: center;
+        }
+        
+        /* Flowchart Styles */
+        /* Updated Flowchart Styles */
+.flowchart {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 3rem auto;
+    max-width: 900px;
+    padding: 0 1rem;
+}
+
+.flowchart-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+    padding: 2rem;
+    max-width: 250px;
+    background: linear-gradient(145deg, #1e1e2e, #1a1a1a);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease;
+    overflow: hidden;
+}
+
+.flowchart-step:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.flowchart-step:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(58, 134, 255, 0.2);
+    border-color: var(--accent);
+}
+
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0 auto 1.2rem;
+    box-shadow: 0 5px 15px rgba(58, 134, 255, 0.3);
+    transition: transform 0.3s;
+}
+
+.flowchart-step:hover .step-number {
+    transform: scale(1.1);
+}
+
+.step-title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+}
+
+.step-description {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 1;
+    line-height: 1.5;
+}
+
+.step-arrow {
+    flex: 0 0 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+    color: var(--accent);
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+    transition: transform 0.3s;
+}
+
+.flowchart:hover .step-arrow {
+    animation: arrowPulse 1.5s infinite;
+}
+
+@keyframes arrowPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+/* Animation for flowchart steps */
+.flowchart-step {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: stepFadeIn 0.6s ease-out forwards;
+}
+
+.flowchart-step:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.flowchart-step:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.flowchart-step:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+@keyframes stepFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Media query for responsive design */
+@media (max-width: 992px) {
+    .flowchart {
+        flex-direction: column;
+        gap: 3rem;
+    }
+    
+    .flowchart-step {
+        max-width: 80%;
+    }
+    
+    .step-arrow {
+        transform: rotate(90deg);
+        margin: 0;
+        animation: arrowPulseVertical 1.5s infinite;
+    }
+    
+    @keyframes arrowPulseVertical {
+        0%, 100% { transform: rotate(90deg) scale(1); opacity: 1; }
+        50% { transform: rotate(90deg) scale(1.2); opacity: 0.8; }
+    }
+}
+        
+        /* Demo Section */
+        .video-demo {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            position: relative;
+        }
+
+        .video-demo video {
+            max-width: 100%;
+            width: 1000px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+        
+        .demo-img {
+            max-width: 100%;
+            width: 1000px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+        
+        /* CTA Section */
+        .cta {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 2rem;
+            background: linear-gradient(135deg, rgba(58, 134, 255, 0.05) 0%, rgba(108, 99, 255, 0.05) 100%);
+            border-radius: 20px;
+        }
+        
+        .cta h2 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta p {
+            margin: 1.5rem auto;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .cta .download-btn {
+            font-size: 1.1rem;
+            padding: 0.9rem 2.5rem;
+            margin-top: 1rem;
+        }
+
+        .platforms {
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: rgba(10, 10, 10, 0.8);
+            padding: 2rem 2rem 1rem;
+            text-align: center;
+            position: relative;
+            border-top: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            text-align: center;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 1rem;
+            padding: 0 1rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--text);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-section h3:after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 2px;
+            bottom: 0;
+            left: 25%;
+            background-color: var(--accent);
+        }
+        
+        .footer-section ul {
+            list-style: none;
+            text-align: center;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.95rem;
+        }
+        
+        .footer-section ul li a:hover {
+            color: var(--accent);
+        }
+        
+        .copyright {
+            padding-top: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero {
+                padding-top: 4rem;
+            }
+            
+            .flowchart {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .flowchart-step {
+                max-width: 100%;
+            }
+            
+            .step-arrow {
+                transform: rotate(90deg);
+                margin: 0.5rem 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hero-content, .feature-card, .flowchart-step, .video-demo {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .feature-card:nth-child(2), .flowchart-step:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+        
+        .feature-card:nth-child(3), .flowchart-step:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#" class="logo">Clips<span>e</span></a>
+            <div class="nav-right">
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#download">Download</a></li>
+                </ul>
+                <a href="https://drive.google.com/file/d/1JigXdmsCphh3xO73OZgWj0ZLjlcjYYNR/view?usp=sharing" class="download-btn">Documentation</a>
+            </div>
+        </nav>
+    </header>
+    
+    <section class="hero">
+        <div class="hero-video">
+            <video autoplay loop muted playsinline style="max-width: 100%; width: 1000px; height: auto; border-radius: 12px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); border: 1px solid var(--border); transition: transform 0.5s ease, box-shadow 0.5s ease;">
+                <source src="demo.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="hero-content">
+            <h1>Image Search <span class="highlight">Simplified</span></h1>
+            <p>Discover a new way to find your images using natural language, powered by <b>Clipse</b>. Search your photo library by describing what you're looking for.</p>
+            <a href="https://drive.google.com/file/d/13CPIsIJoASSOt7Zd4A22YWuRhvU4Nsvp/view?usp=sharing" class="download-btn">Download Now</a>
+        </div>
+    </section>
+    
+    <section class="features" id="features">
+        <h2>Key Features</h2>
+        <p class="section-description">Clipse combines cutting-edge AI with intuitive design to transform how you find images.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <h3 class="feature-title">Semantic Search</h3>
+                <p>Find images by describing what's in them using natural language, powered by the CLIP neural network model. Ask for "sunset over mountains" or "person wearing red hat" and get instant results.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <h3 class="feature-title">OCR Integration</h3>
+                <p>Locate images containing specific text with our integrated Optical Character Recognition technology. Find screenshots, documents, and photos containing any text you need.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🏷️</div>
+                <h3 class="feature-title">Custom Tagging</h3>
+                <p>Create your own organization system with custom tags that enhance searchability and categorization. Combine AI-powered search with your personal organization system.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section >
+        <h2 id="demo">How It Works</h2>
+        <p class="text-center section-description">Just type what you're looking for, and Clipse finds the most relevant images in your collection — no manual tagging required.</p>
+        
+        <div class="flowchart">
+            <div class="flowchart-step">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Choose Folders</h3>
+                <p class="step-description">Select the folders or directories containing the images you want to search through.</p>
+            </div>
+            
+            <div class="step-arrow">
+                →
+            </div>
+            
+            <div class="flowchart-step">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Process Images</h3>
+                <p class="step-description">Clipse automatically indexes and processes your images using the CLIP neural network.</p>
+            </div>
+            
+            <div class="step-arrow">
+                →
+            </div>
+            
+            <div class="flowchart-step">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Search</h3>
+                <p class="step-description">Type what you're looking for in natural language, and instantly find the images you need.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta" id="download">
+        <h2>Ready to Transform Your Image Library?</h2>
+        <p>Download Clipse now and experience a new way to discover and organize your images.</p>
+        <a href="https://drive.google.com/file/d/13CPIsIJoASSOt7Zd4A22YWuRhvU4Nsvp/view?usp=sharing" class="download-btn">Download for Windows</a>
+    </section>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Clipse</h3>
+                <p>The intelligent image search assistant for your desktop. Find any image in seconds using natural language.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#download">Download</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 Clipse. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
