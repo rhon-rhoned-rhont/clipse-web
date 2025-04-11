@@ -597,26 +597,6 @@
         .feature-card:nth-child(3), .flowchart-step:nth-child(5) {
             animation-delay: 0.4s;
         }
-        /* Remove scrollbars while maintaining scroll functionality */
-html {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-}
-
-/* Chrome, Safari and Opera */
-html::-webkit-scrollbar {
-    display: none;
-}
-
-/* In case you need to remove scrollbars from specific elements too */
-.scrollable-element {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.scrollable-element::-webkit-scrollbar {
-    display: none;
-}
     </style>
 </head>
 <body>
@@ -626,7 +606,7 @@ html::-webkit-scrollbar {
             <div class="nav-right">
                 <ul class="nav-links">
                     <li><a href="#features">Features</a></li>
-                    <li><a href="#demo">Guide</a></li>
+                    <li><a href="#demo">Demo</a></li>
                     <li><a href="#download">Download</a></li>
                 </ul>
                 <a href="https://drive.google.com/file/d/1JigXdmsCphh3xO73OZgWj0ZLjlcjYYNR/view?usp=sharing" class="download-btn">Documentation</a>
@@ -642,7 +622,7 @@ html::-webkit-scrollbar {
             </video>
         </div>
         <div class="hero-content">
-            <h1>Image Search, <span class="highlight">Simplified</span></h1>
+            <h1>Image Search <span class="highlight">Simplified</span></h1>
             <p>Discover a new way to find your images using natural language, powered by <b>Clipse</b>. Search your photo library by describing what you're looking for.</p>
             <a href="https://drive.google.com/file/d/13CPIsIJoASSOt7Zd4A22YWuRhvU4Nsvp/view?usp=sharing" class="download-btn">Download Now</a>
         </div>
@@ -709,8 +689,106 @@ html::-webkit-scrollbar {
     <section class="cta" id="download">
         <h2>Ready to Transform Your Image Library?</h2>
         <p>Download Clipse now and experience a new way to discover and organize your images.</p>
-        <a href="https://drive.google.com/file/d/13CPIsIJoASSOt7Zd4A22YWuRhvU4Nsvp/view?usp=sharing" class="download-btn">Download for Windows</a>
+        <a href="#" class="download-btn" id="download-button">Download for Windows</a>
+        
+        <!-- Disclaimer Popup Overlay -->
+        <div id="disclaimer-popup" class="popup-overlay">
+            <div class="popup-content">
+                <h3>Development Disclaimer</h3>
+                <p>Please note that Clipse is still in early development. You may encounter bugs or inaccuracies that will be addressed in upcoming releases</p>
+                <div class="popup-buttons">
+                    <a href="https://drive.google.com/file/d/13CPIsIJoASSOt7Zd4A22YWuRhvU4Nsvp/view?usp=sharing" class="popup-btn confirm-btn">Download Clipse v0.0.0.0</a>
+                    <button class="popup-btn cancel-btn" id="cancel-btn">I changed my mind</button>
+                </div>
+            </div>
+        </div>
     </section>
+
+    <style>
+        /* Popup Styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .popup-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .popup-content h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .popup-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .popup-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .confirm-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        
+        .cancel-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+    </style>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadButton = document.getElementById('download-button');
+            const disclaimerPopup = document.getElementById('disclaimer-popup');
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            // Show popup when download button is clicked
+            downloadButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                disclaimerPopup.style.display = 'flex';
+            });
+            
+            // Hide popup when "I changed my mind" is clicked
+            cancelBtn.addEventListener('click', function() {
+                disclaimerPopup.style.display = 'none';
+            });
+            
+            // Close popup when clicking outside the popup content
+            disclaimerPopup.addEventListener('click', function(e) {
+                if (e.target === disclaimerPopup) {
+                    disclaimerPopup.style.display = 'none';
+                }
+            });
+        });
+    </script>
     
     <footer>
         <div class="footer-content">
@@ -724,7 +802,7 @@ html::-webkit-scrollbar {
                 <ul>
                     <li><a href="#">Home</a></li>
                     <li><a href="#features">Features</a></li>
-                    <li><a href="#demo">Guide</a></li>
+                    <li><a href="#demo">Demo</a></li>
                     <li><a href="#download">Download</a></li>
                 </ul>
             </div>
